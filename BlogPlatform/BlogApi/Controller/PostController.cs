@@ -1,53 +1,40 @@
-namespace BlogApi.Controller;
-using BlogRepositories;
 using BlogEntities.Models;
+using BlogRepositories.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
- [ApiController]
+namespace BlogApi.Controllers;
+
+[ApiController]
 [Route("api/posts")]
-public class PostsController: ControllerBase
+public class PostsController : ControllerBase
 {
     [HttpPost]
-    public IActionResult AddPost(Posts posts)
+    public void AddPost(Posts post)
     {
-        PostRepositories.AddPost(posts);
-        return Ok();
+        PostRepository.AddPost(post);
     }
 
-    [HttpPut("addcomment/{postId}")]
-    public IActionResult AddComment(int postId,Comments comment)
+    [HttpPost("{id:int}")]
+    public void AddComment([FromRoute] int id, [FromBody] Comments comment)
     {
-        try
-    {
-        PostRepositories.AddComment(postId, comment);
-        return Ok();
-    }
-    catch (Exception ex)
-    {
-        return BadRequest($"Error adding comment: {ex.Message}");
-    }
+        PostRepository.AddComment(id, comment);
     }
 
     [HttpGet]
-    public IActionResult GetAllPosts()
+    public List<Posts> GetAllPosts()
     {
-        PostRepositories.GetAllPosts();
-        return Ok();
+        return PostRepository.GetAllPosts();
     }
 
-    [HttpGet("getallpostsbyauthor/{userId}")]
-    public IActionResult GetAllPostByAuthor(int userId)
+    [HttpGet("{id:int}")]
+    public List<Posts> GetAllPostsByAuthor([FromRoute] int id)
     {
-        PostRepositories.GetAllPostByAuthor(userId);
-        return Ok();
+        return PostRepository.GetAllPostsByAuthor(id);
     }
 
-    [HttpGet("getonepostbyauthor/{postId}/{userId}")]
-    public IActionResult GetOnePostByAuthor(int postId,int userId)
+    [HttpGet("{postId:int}, {userId:int}")]
+    public Posts? GetOnePostByAuthor([FromRoute] int postId, [FromRoute] int userId)
     {
-        PostRepositories.GetOnePostByAuthor(postId,userId);
-        return Ok();
+        return PostRepository.GetOnePostByAuthor(postId, userId);
     }
-
-
 }
